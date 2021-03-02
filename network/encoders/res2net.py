@@ -26,7 +26,7 @@ class ContextBlock2d(nn.Module):
                  ratio=8):
         super(ContextBlock2d, self).__init__()
         assert pool in ['avg', 'att']
-        assert all([f in ['channel_add', 'channel_mul'] for f in fusions])
+        assert all(f in ['channel_add', 'channel_mul'] for f in fusions)
         assert len(fusions) > 0, 'at least one fusion should be used'
         self.inplanes = inplanes
         self.planes = planes
@@ -129,15 +129,12 @@ class Bottle2neck(nn.Module):
                                bias=False)
         self.bn1 = nn.BatchNorm2d(width * scale)
 
-        if scale == 1:
-            self.nums = 1
-        else:
-            self.nums = scale - 1
+        self.nums = 1 if scale == 1 else scale - 1
         if stype == 'stage':
             self.pool = nn.AvgPool2d(kernel_size=3, stride=stride, padding=1)
         convs = []
         bns = []
-        for i in range(self.nums):
+        for _ in range(self.nums):
             convs.append(
                 nn.Conv2d(width,
                           width,
@@ -176,14 +173,13 @@ class Bottle2neck(nn.Module):
                 sp = sp + spx[i]
             sp = self.convs[i](sp)
             sp = self.relu(self.bns[i](sp))
-            if i == 0:
-                out = sp
-            else:
-                out = torch.cat((out, sp), 1)
-        if self.scale != 1 and self.stype == 'normal':
-            out = torch.cat((out, spx[self.nums]), 1)
-        elif self.scale != 1 and self.stype == 'stage':
-            out = torch.cat((out, self.pool(spx[self.nums])), 1)
+            out = sp if i == 0 else torch.cat((out, sp), 1)
+        if self.stype == 'normal':
+            if self.scale != 1:
+                out = torch.cat((out, spx[self.nums]), 1)
+        elif self.stype == 'stage':
+            if self.scale != 1:
+                out = torch.cat((out, self.pool(spx[self.nums])), 1)
 
         out = self.conv3(out)
         out = self.bn3(out)
@@ -243,17 +239,20 @@ class Res2Net(nn.Module):
                 nn.BatchNorm2d(planes * block.expansion),
             )
 
-        layers = []
-        layers.append(
-            block(self.inplanes,
-                  planes,
-                  stride,
-                  downsample=downsample,
-                  stype='stage',
-                  baseWidth=self.baseWidth,
-                  scale=self.scale))
+        layers = [
+            block(
+                self.inplanes,
+                planes,
+                stride,
+                downsample=downsample,
+                stype='stage',
+                baseWidth=self.baseWidth,
+                scale=self.scale,
+            )
+        ]
+
         self.inplanes = planes * block.expansion
-        for i in range(1, blocks):
+        for _ in range(1, blocks):
             layers.append(
                 block(self.inplanes,
                       planes,
@@ -344,8 +343,7 @@ class Res2Net_GC(nn.Module):
                 nn.BatchNorm2d(planes * block.expansion),
             )
 
-        layers = []
-        layers.append(block1(self.inplanes, self.inplanes))
+        layers = [block1(self.inplanes, self.inplanes)]
         layers.append(
             block(self.inplanes,
                   planes,
@@ -356,7 +354,7 @@ class Res2Net_GC(nn.Module):
                   scale=self.scale))
         self.inplanes = planes * block.expansion
         layers.append(block1(self.inplanes, self.inplanes))
-        for i in range(1, blocks):
+        for _ in range(1, blocks):
             layers.append(block1(self.inplanes, self.inplanes))
             layers.append(
                 block(self.inplanes,
@@ -382,17 +380,20 @@ class Res2Net_GC(nn.Module):
                 nn.BatchNorm2d(planes * block.expansion),
             )
 
-        layers = []
-        layers.append(
-            block(self.inplanes,
-                  planes,
-                  stride,
-                  downsample=downsample,
-                  stype='stage',
-                  baseWidth=self.baseWidth,
-                  scale=self.scale))
+        layers = [
+            block(
+                self.inplanes,
+                planes,
+                stride,
+                downsample=downsample,
+                stype='stage',
+                baseWidth=self.baseWidth,
+                scale=self.scale,
+            )
+        ]
+
         self.inplanes = planes * block.expansion
-        for i in range(1, blocks):
+        for _ in range(1, blocks):
             layers.append(
                 block(self.inplanes,
                       planes,

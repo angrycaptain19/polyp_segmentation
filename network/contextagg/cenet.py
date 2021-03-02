@@ -40,9 +40,11 @@ class DACblock(nn.Module):
                                  dilation=1,
                                  padding=0)
         for m in self.modules():
-            if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
-                if m.bias is not None:
-                    m.bias.data.zero_()
+            if (
+                isinstance(m, (nn.Conv2d, nn.ConvTranspose2d))
+                and m.bias is not None
+            ):
+                m.bias.data.zero_()
 
     def forward(self, x):
         dilate1_out = nonlinearity(self.dilate1(x))
@@ -50,8 +52,7 @@ class DACblock(nn.Module):
         dilate3_out = nonlinearity(self.conv1x1(self.dilate2(self.dilate1(x))))
         dilate4_out = nonlinearity(
             self.conv1x1(self.dilate3(self.dilate2(self.dilate1(x)))))
-        out = x + dilate1_out + dilate2_out + dilate3_out + dilate4_out
-        return out
+        return x + dilate1_out + dilate2_out + dilate3_out + dilate4_out
 
 
 class DACblock_without_atrous(nn.Module):
@@ -78,9 +79,11 @@ class DACblock_without_atrous(nn.Module):
                                  dilation=1,
                                  padding=0)
         for m in self.modules():
-            if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
-                if m.bias is not None:
-                    m.bias.data.zero_()
+            if (
+                isinstance(m, (nn.Conv2d, nn.ConvTranspose2d))
+                and m.bias is not None
+            ):
+                m.bias.data.zero_()
 
     def forward(self, x):
         dilate1_out = nonlinearity(self.dilate1(x))
@@ -88,9 +91,7 @@ class DACblock_without_atrous(nn.Module):
         dilate3_out = nonlinearity(self.conv1x1(self.dilate2(self.dilate1(x))))
         dilate4_out = nonlinearity(
             self.conv1x1(self.dilate3(self.dilate2(self.dilate1(x)))))
-        out = x + dilate1_out + dilate2_out + dilate3_out + dilate4_out
-
-        return out
+        return x + dilate1_out + dilate2_out + dilate3_out + dilate4_out
 
 
 class DACblock_with_inception(nn.Module):
@@ -113,9 +114,11 @@ class DACblock_with_inception(nn.Module):
                                  dilation=1,
                                  padding=0)
         for m in self.modules():
-            if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
-                if m.bias is not None:
-                    m.bias.data.zero_()
+            if (
+                isinstance(m, (nn.Conv2d, nn.ConvTranspose2d))
+                and m.bias is not None
+            ):
+                m.bias.data.zero_()
 
     def forward(self, x):
         dilate1_out = nonlinearity(self.dilate1(x))
@@ -123,8 +126,7 @@ class DACblock_with_inception(nn.Module):
         dilate_concat = nonlinearity(
             self.conv1x1(torch.cat([dilate1_out, dilate2_out], 1)))
         dilate3_out = nonlinearity(self.dilate1(dilate_concat))
-        out = x + dilate3_out
-        return out
+        return x + dilate3_out
 
 
 class DACblock_with_inception_blocks(nn.Module):
@@ -148,17 +150,18 @@ class DACblock_with_inception_blocks(nn.Module):
         self.pooling = nn.MaxPool2d(kernel_size=3, stride=1, padding=1)
 
         for m in self.modules():
-            if isinstance(m, nn.Conv2d) or isinstance(m, nn.ConvTranspose2d):
-                if m.bias is not None:
-                    m.bias.data.zero_()
+            if (
+                isinstance(m, (nn.Conv2d, nn.ConvTranspose2d))
+                and m.bias is not None
+            ):
+                m.bias.data.zero_()
 
     def forward(self, x):
         dilate1_out = nonlinearity(self.conv1x1(x))
         dilate2_out = nonlinearity(self.conv3x3(self.conv1x1(x)))
         dilate3_out = nonlinearity(self.conv5x5(self.conv1x1(x)))
         dilate4_out = self.pooling(x)
-        out = dilate1_out + dilate2_out + dilate3_out + dilate4_out
-        return out
+        return dilate1_out + dilate2_out + dilate3_out + dilate4_out
 
 
 class PSPModule(nn.Module):
@@ -215,10 +218,8 @@ class SPPblock(nn.Module):
                                  size=(h, w),
                                  mode='bilinear')
 
-        out = torch.cat(
+        return torch.cat(
             [self.layer1, self.layer2, self.layer3, self.layer4, x], 1)
-
-        return out
 
 
 class DecoderBlock(nn.Module):

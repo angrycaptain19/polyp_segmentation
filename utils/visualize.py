@@ -4,9 +4,7 @@ import cv2
 
 
 def save_img(path, img, lib="cv2", overwrite=True):
-    if (not overwrite and os.path.exists(path)):
-        pass
-    else:
+    if overwrite or not os.path.exists(path):
         print(path)
         directory = os.path.dirname(path)
         if not os.path.exists(directory):

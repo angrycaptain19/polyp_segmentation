@@ -112,7 +112,7 @@ class SyncMaster(object):
         self._activated = True
 
         intermediates = [(0, master_msg)]
-        for i in range(self.nr_slaves):
+        for _ in range(self.nr_slaves):
             intermediates.append(self._queue.get())
 
         results = self._master_callback(intermediates)
@@ -124,7 +124,7 @@ class SyncMaster(object):
                 continue
             self._registry[i].result.put(res)
 
-        for i in range(self.nr_slaves):
+        for _ in range(self.nr_slaves):
             assert self._queue.get() is True
 
         return results[0][1]
@@ -219,18 +219,16 @@ class _SynchronizedBatchNorm(_BatchNorm):
         to_reduce = [j for i in to_reduce for j in i]  # flatten
         target_gpus = [i[1].sum.get_device() for i in intermediates]
 
-        sum_size = sum([i[1].sum_size for i in intermediates])
+        sum_size = sum(i[1].sum_size for i in intermediates)
         sum_, ssum = ReduceAddCoalesced.apply(target_gpus[0], 2, *to_reduce)
         mean, inv_std = self._compute_mean_std(sum_, ssum, sum_size)
 
         broadcasted = Broadcast.apply(target_gpus, mean, inv_std)
 
-        outputs = []
-        for i, rec in enumerate(intermediates):
-            outputs.append(
-                (rec[0], _MasterMessage(*broadcasted[i * 2:i * 2 + 2])))
-
-        return outputs
+        return [
+            (rec[0], _MasterMessage(*broadcasted[i * 2 : i * 2 + 2]))
+            for i, rec in enumerate(intermediates)
+        ]
 
     def _compute_mean_std(self, sum_, ssum, size):
         """Compute the mean and standard-deviation with sum and square-sum. This method
@@ -276,10 +274,7 @@ class _ASPPModule(nn.Module):
         for m in self.modules():
             if isinstance(m, nn.Conv2d):
                 torch.nn.init.kaiming_normal_(m.weight)
-            elif isinstance(m, SynchronizedBatchNorm2d):
-                m.weight.data.fill_(1)
-                m.bias.data.zero_()
-            elif isinstance(m, nn.BatchNorm2d):
+            elif isinstance(m, (SynchronizedBatchNorm2d, nn.BatchNorm2d)):
                 m.weight.data.fill_(1)
                 m.bias.data.zero_()
 
@@ -460,10 +455,7 @@ class ASPP(nn.Module):
                 # n = m.kernel_size[0] * m.kernel_size[1] * m.out_channels
                 # m.weight.data.normal_(0, math.sqrt(2. / n))
                 torch.nn.init.kaiming_normal_(m.weight)
-            elif isinstance(m, SynchronizedBatchNorm2d):
-                m.weight.data.fill_(1)
-                m.bias.data.zero_()
-            elif isinstance(m, nn.BatchNorm2d):
+            elif isinstance(m, (SynchronizedBatchNorm2d, nn.BatchNorm2d)):
                 m.weight.data.fill_(1)
                 m.bias.data.zero_()
 

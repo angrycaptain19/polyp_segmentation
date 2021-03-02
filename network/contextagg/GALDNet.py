@@ -378,13 +378,11 @@ class GALDNet(nn.Module):
 
 
 def GALD_res101(num_classes=21):
-    model = GALDNet(Bottleneck, [3, 4, 23, 3], num_classes)
-    return model
+    return GALDNet(Bottleneck, [3, 4, 23, 3], num_classes)
 
 
 def GALD_res50(num_classes=21):
-    model = GALDNet(Bottleneck, [3, 4, 6, 3], num_classes)
-    return model
+    return GALDNet(Bottleneck, [3, 4, 6, 3], num_classes)
 
 
 if __name__ == '__main__':

@@ -12,8 +12,7 @@ def gkern(kernlen=16, nsig=3):
     x = np.linspace(-nsig - interval / 2., nsig + interval / 2., kernlen + 1)
     kern1d = np.diff(st.norm.cdf(x))
     kernel_raw = np.sqrt(np.outer(kern1d, kern1d))
-    kernel = kernel_raw / kernel_raw.sum()
-    return kernel
+    return kernel_raw / kernel_raw.sum()
 
 
 def min_max_norm(in_):

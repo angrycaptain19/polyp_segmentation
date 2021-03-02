@@ -10,15 +10,13 @@ mean_dice = 0
 def recall_m(y_true, y_pred):
     true_positives = np.sum(np.round(np.clip(y_true * y_pred, 0, 1)))
     possible_positives = np.sum(np.round(np.clip(y_true, 0, 1)))
-    recall = true_positives / (possible_positives + K.epsilon())
-    return recall
+    return true_positives / (possible_positives + K.epsilon())
 
 
 def precision_m(y_true, y_pred):
     true_positives = np.sum(np.round(np.clip(y_true * y_pred, 0, 1)))
     predicted_positives = np.sum(np.round(np.clip(y_pred, 0, 1)))
-    precision = true_positives / (predicted_positives + K.epsilon())
-    return precision
+    return true_positives / (predicted_positives + K.epsilon())
 
 
 def dice_m(y_true, y_pred):

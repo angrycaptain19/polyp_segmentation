@@ -70,10 +70,8 @@ def get_loader(image_paths,
                             transform=transform,
                             is_train=is_train)
 
-    data_loader = torch.utils.data.DataLoader(dataset,
+    return torch.utils.data.DataLoader(dataset,
                                               batch_size=batchsize,
                                               shuffle=shuffle,
                                               pin_memory=pin_memory,
                                               drop_last=drop_last)
-
-    return data_loader

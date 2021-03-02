@@ -83,7 +83,6 @@ def main():
 
     n_skip = 3
     vit_name = 'R50-ViT-B_16'
-    vit_patches_size = 16
     img_size = config["dataset"]["img_size"]
     import torch.backends.cudnn as cudnn
     from network.models.transunet.vit_seg_modeling import VisionTransformer as ViT_seg
@@ -95,6 +94,7 @@ def main():
     config_vit.n_skip = n_skip
 
     if vit_name.find('R50') != -1:
+        vit_patches_size = 16
         config_vit.patches.grid = (int(img_size / vit_patches_size),
                                    int(img_size / vit_patches_size))
     # model = ViT_seg(config_vit, img_size=img_size, num_classes=config_vit.n_classes).cuda()

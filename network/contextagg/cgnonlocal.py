@@ -490,10 +490,7 @@ class ResNet(nn.Module):
             for name, m in self._modules['layer3'][-2].named_modules():
                 if isinstance(m, nn.Conv2d):
                     nn.init.normal_(m.weight, mean=0, std=0.01)
-                elif isinstance(m, nn.BatchNorm2d):
-                    nn.init.constant_(m.weight, 0)
-                    nn.init.constant_(m.bias, 0)
-                elif isinstance(m, nn.GroupNorm):
+                elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
                     nn.init.constant_(m.weight, 0)
                     nn.init.constant_(m.bias, 0)
 
@@ -515,8 +512,7 @@ class ResNet(nn.Module):
                 nn.BatchNorm2d(planes * block.expansion),
             )
 
-        layers = []
-        layers.append(block(self.inplanes, planes, stride, downsample))
+        layers = [block(self.inplanes, planes, stride, downsample)]
         self.inplanes = planes * block.expansion
         for i in range(1, blocks):
             if (i == 5 and blocks == 6) or \
@@ -540,9 +536,6 @@ class ResNet(nn.Module):
                                      use_scale=False,
                                      groups=8,
                                      order=3))
-                else:
-                    pass
-
             layers.append(block(self.inplanes, planes))
 
         return nn.Sequential(*layers)

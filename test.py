@@ -33,15 +33,13 @@ mean_dice = 0
 def recall_m(y_true, y_pred):
     true_positives = np.sum(np.round(np.clip(y_true * y_pred, 0, 1)))
     possible_positives = np.sum(np.round(np.clip(y_true, 0, 1)))
-    recall = true_positives / (possible_positives + K.epsilon())
-    return recall
+    return true_positives / (possible_positives + K.epsilon())
 
 
 def precision_m(y_true, y_pred):
     true_positives = np.sum(np.round(np.clip(y_true * y_pred, 0, 1)))
     predicted_positives = np.sum(np.round(np.clip(y_pred, 0, 1)))
-    precision = true_positives / (predicted_positives + K.epsilon())
-    return precision
+    return true_positives / (predicted_positives + K.epsilon())
 
 
 def dice_m(y_true, y_pred):
@@ -94,9 +92,7 @@ class Dataset(torch.utils.data.Dataset):
 
 
 def save_img(path, img, lib="cv2", overwrite=True):
-    if (not overwrite and os.path.exists(path)):
-        pass
-    else:
+    if overwrite or not os.path.exists(path):
         print(path)
         directory = os.path.dirname(path)
         if not os.path.exists(directory):
@@ -111,13 +107,13 @@ def test(v, model, folds, visualize=False):
     gts = []
     prs = []
 
+    _data_name = 'Kvasir'
+    # data_path = 'kvasir-seg/TestDataset/CVC-300'
+
+    save_path = 'results/PraNet_kfold/'
     for id in list(folds.keys()):
         test_fold = 'fold' + str(id)
-        _data_name = 'Kvasir'
         data_path = 'Kvasir_fold_new/' + 'fold_' + str(id)
-        # data_path = 'kvasir-seg/TestDataset/CVC-300'
-
-        save_path = 'results/PraNet_kfold/'
         model_path = './snapshots/_PraNetv' + str(
             v) + '_Res2Net_kfold/' + 'PraNetDG-' + test_fold + '-' + str(
                 folds[id]) + '.pth'
@@ -173,12 +169,11 @@ def test(v, model, folds, visualize=False):
             gt = np.asarray(gt, np.float32)
             res2 = 0
             image = image.cuda()
-            if (v == 0 or v == 1 or v == 2 or v == 3 or v == 19 or v == 20):
+            if v in [0, 1, 2, 3, 19, 20]:
                 res5, res4, res3, res2 = model(image)
-            elif (v == 4 or v == 5 or v == 13 or v == "GALD" or v == 14
-                  or v == 15 or v == 16 or v == 17 or v == 18):
+            elif v in [4, 5, 13, "GALD", 14, 15, 16, 17, 18]:
                 res_head_out, res5, res4, res3, res2 = model(image)
-            elif (v == 6 or v == 7):
+            elif v in [6, 7]:
                 res_gald_head_out, res_dual_head_out, res5, res4, res3, res2 = model(
                     image)
             elif (v == 8):
@@ -284,15 +279,13 @@ mean_dice = 0
 def recall_m(y_true, y_pred):
     true_positives = np.sum(np.round(np.clip(y_true * y_pred, 0, 1)))
     possible_positives = np.sum(np.round(np.clip(y_true, 0, 1)))
-    recall = true_positives / (possible_positives + K.epsilon())
-    return recall
+    return true_positives / (possible_positives + K.epsilon())
 
 
 def precision_m(y_true, y_pred):
     true_positives = np.sum(np.round(np.clip(y_true * y_pred, 0, 1)))
     predicted_positives = np.sum(np.round(np.clip(y_pred, 0, 1)))
-    precision = true_positives / (predicted_positives + K.epsilon())
-    return precision
+    return true_positives / (predicted_positives + K.epsilon())
 
 
 def dice_m(y_true, y_pred):

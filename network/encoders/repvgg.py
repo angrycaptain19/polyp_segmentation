@@ -85,11 +85,7 @@ class RepVGGBlock(nn.Module):
         if hasattr(self, 'rbr_reparam'):
             return self.nonlinearity(self.rbr_reparam(inputs))
 
-        if self.rbr_identity is None:
-            id_out = 0
-        else:
-            id_out = self.rbr_identity(inputs)
-
+        id_out = 0 if self.rbr_identity is None else self.rbr_identity(inputs)
         return self.nonlinearity(
             self.rbr_dense(inputs) + self.rbr_1x1(inputs) + id_out)
 

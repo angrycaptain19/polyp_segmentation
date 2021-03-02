@@ -310,10 +310,8 @@ class ResNet(nn.Module):
 
 
 def DualSeg_res101(num_classes=21):
-    model = ResNet(Bottleneck, [3, 4, 23, 3], num_classes)
-    return model
+    return ResNet(Bottleneck, [3, 4, 23, 3], num_classes)
 
 
 def DualSeg_res50(num_classes=21):
-    model = ResNet(Bottleneck, [3, 4, 6, 3], num_classes)
-    return model
+    return ResNet(Bottleneck, [3, 4, 6, 3], num_classes)

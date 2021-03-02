@@ -440,8 +440,7 @@ class VisionTransformer(nn.Module):
             x = x.repeat(1, 3, 1, 1)
         x, attn_weights, features = self.transformer(x)  # (B, n_patch, hidden)
         x = self.decoder(x, features)
-        logits = self.segmentation_head(x)
-        return logits
+        return self.segmentation_head(x)
 
     def load_from(self, weights):
         with torch.no_grad():
@@ -478,7 +477,7 @@ class VisionTransformer(nn.Module):
                 posemb_grid = posemb_grid.reshape(gs_old, gs_old, -1)
                 zoom = (gs_new / gs_old, gs_new / gs_old, 1)
                 posemb_grid = ndimage.zoom(posemb_grid, zoom, order=1)  # th2np
-                posemb_grid = posemb_grid.reshape(1, gs_new * gs_new, -1)
+                posemb_grid = posemb_grid.reshape(1, gs_new**2, -1)
                 posemb = posemb_grid
                 self.transformer.embeddings.position_embeddings.copy_(
                     np2th(posemb))

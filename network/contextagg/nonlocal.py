@@ -88,7 +88,7 @@ class NLBlockND(nn.Module):
             nn.init.constant_(self.W_z.bias, 0)
 
         # define theta and phi for all operations except gaussian
-        if self.mode == "embedded" or self.mode == "dot" or self.mode == "concatenate":
+        if self.mode in ["embedded", "dot", "concatenate"]:
             self.theta = conv_nd(in_channels=self.in_channels,
                                  out_channels=self.inter_channels,
                                  kernel_size=1)

@@ -76,8 +76,7 @@ class PSPModule(nn.Module):
     def forward(self, feats):
         n, c, _, _ = feats.size()
         priors = [stage(feats).view(n, c, -1) for stage in self.stages]
-        center = torch.cat(priors, -1)
-        return center
+        return torch.cat(priors, -1)
 
 
 class _SelfAttentionBlock(nn.Module):
@@ -108,7 +107,7 @@ class _SelfAttentionBlock(nn.Module):
         self.out_channels = out_channels
         self.key_channels = key_channels
         self.value_channels = value_channels
-        if out_channels == None:
+        if out_channels is None:
             self.out_channels = in_channels
         self.pool = nn.MaxPool2d(kernel_size=(scale, scale))
         self.f_key = nn.Sequential(
@@ -219,5 +218,4 @@ class APNB(nn.Module):
         context = priors[0]
         for i in range(1, len(priors)):
             context += priors[i]
-        output = self.conv_bn_dropout(torch.cat([context, feats], 1))
-        return output
+        return self.conv_bn_dropout(torch.cat([context, feats], 1))

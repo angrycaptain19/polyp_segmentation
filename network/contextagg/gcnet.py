@@ -19,7 +19,7 @@ class SNLblock2d(nn.Module):
     def __init__(self, inplanes, planes, pool='att', fusions=['channel_add']):
         super(SNLblock2d, self).__init__()
         assert pool in ['avg', 'att']
-        assert all([f in ['channel_add', 'channel_mul'] for f in fusions])
+        assert all(f in ['channel_add', 'channel_mul'] for f in fusions)
         assert len(fusions) > 0, 'at least one fusion should be used'
         self.inplanes = inplanes
         self.planes = planes
@@ -100,7 +100,7 @@ class ContextBlock2d(nn.Module):
                  ratio=8):
         super(ContextBlock2d, self).__init__()
         assert pool in ['avg', 'att']
-        assert all([f in ['channel_add', 'channel_mul'] for f in fusions])
+        assert all(f in ['channel_add', 'channel_mul'] for f in fusions)
         assert len(fusions) > 0, 'at least one fusion should be used'
         self.inplanes = inplanes
         self.planes = planes
@@ -329,15 +329,6 @@ class ResNet(nn.Module):
                                              num_block[3],
                                              2,
                                              gc=gc)
-        elif type == "snl":
-            self.conv3_x = self._make_layer(block, 128, num_block[1], 2)
-            self.conv4_x = self._make_layer1(block,
-                                             block1,
-                                             256,
-                                             num_block[2],
-                                             2,
-                                             gc=gc)
-            self.conv5_x = self._make_layer(block, 512, num_block[3], 2)
         else:
             self.conv3_x = self._make_layer(block, 128, num_block[1], 2)
             self.conv4_x = self._make_layer1(block,
@@ -347,7 +338,6 @@ class ResNet(nn.Module):
                                              2,
                                              gc=gc)
             self.conv5_x = self._make_layer(block, 512, num_block[3], 2)
-
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
         self.fc = nn.Linear(512 * block.expansion, num_classes)
 
@@ -363,10 +353,9 @@ class ResNet(nn.Module):
                 nn.BatchNorm2d(planes * block.expansion),
             )
 
-        layers = []
-        layers.append(block(self.inplanes, planes, stride, downsample))
+        layers = [block(self.inplanes, planes, stride, downsample)]
         self.inplanes = planes * block.expansion
-        for i in range(1, blocks):
+        for _ in range(1, blocks):
             layers.append(block(self.inplanes, planes))
         return nn.Sequential(*layers)
 
@@ -382,10 +371,9 @@ class ResNet(nn.Module):
                 nn.BatchNorm2d(planes * block.expansion),
             )
 
-        layers = []
-        layers.append(block(self.inplanes, planes, stride, downsample))
+        layers = [block(self.inplanes, planes, stride, downsample)]
         self.inplanes = planes * block.expansion
-        for i in range(1, blocks - 1):
+        for _ in range(1, blocks - 1):
             layers.append(block(self.inplanes, planes))
         layers.append(block1(self.inplanes, self.inplanes))
         layers.append(block(self.inplanes, planes))
@@ -404,12 +392,11 @@ class ResNet(nn.Module):
                 nn.BatchNorm2d(planes * block.expansion),
             )
 
-        layers = []
-        layers.append(block1(self.inplanes, self.inplanes))
+        layers = [block1(self.inplanes, self.inplanes)]
         layers.append(block(self.inplanes, planes, stride, downsample))
         self.inplanes = planes * block.expansion
         layers.append(block1(self.inplanes, self.inplanes))
-        for i in range(1, blocks):
+        for _ in range(1, blocks):
             layers.append(block1(self.inplanes, self.inplanes))
             layers.append(block(self.inplanes, planes))
 

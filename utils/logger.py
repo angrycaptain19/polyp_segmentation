@@ -59,7 +59,7 @@ class Logger(object):
 
         Logger.logger = logging.getLogger()
 
-        if not Logger.log_level in LOG_LEVEL_DICT:
+        if Logger.log_level not in LOG_LEVEL_DICT:
             print('Invalid logging level: {}'.format(Logger.log_level))
             Logger.log_level = DEFAULT_LOG_LEVEL
 
@@ -74,7 +74,7 @@ class Logger(object):
 
         if stdout_level is not None:
             console = logging.StreamHandler()
-            if not Logger.stdout_level in LOG_LEVEL_DICT:
+            if Logger.stdout_level not in LOG_LEVEL_DICT:
                 print('Invalid logging level: {}'.format(Logger.stdout_level))
                 return
 

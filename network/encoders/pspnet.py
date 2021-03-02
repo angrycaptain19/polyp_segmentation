@@ -114,8 +114,7 @@ class PSPModule(nn.Module):
                        mode='bilinear',
                        align_corners=True) for stage in self.stages
         ] + [feats]
-        bottle = self.bottleneck(torch.cat(priors, 1))
-        return bottle
+        return self.bottleneck(torch.cat(priors, 1))
 
 
 class ResNet(nn.Module):
@@ -315,13 +314,11 @@ class PSPHead(nn.Module):
 
 
 def PSPNet_res101(num_classes=21):
-    model = ResNet(Bottleneck, [3, 4, 23, 3], num_classes)
-    return model
+    return ResNet(Bottleneck, [3, 4, 23, 3], num_classes)
 
 
 def PSPNet_res50(num_classes=21):
-    model = ResNet(Bottleneck, [3, 4, 6, 3], num_classes)
-    return model
+    return ResNet(Bottleneck, [3, 4, 6, 3], num_classes)
 
 
 if __name__ == '__main__':

@@ -48,11 +48,10 @@ class GradualWarmupScheduler(_LRScheduler):
 def cosine_warmup(optimizer, init_lr, total_epoch, num_warmup_epoch):
     cosine_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
         optimizer, total_epoch, eta_min=init_lr, last_epoch=-1)
-    scheduler = GradualWarmupScheduler(optimizer,
+    return GradualWarmupScheduler(optimizer,
                                        multiplier=8,
                                        total_epoch=num_warmup_epoch,
                                        after_scheduler=cosine_scheduler)
-    return scheduler
 
 
 def adjust_lr(optimizer, init_lr, epoch, decay_rate=0.1, decay_epoch=30):

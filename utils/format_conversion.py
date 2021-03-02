@@ -25,9 +25,7 @@ def data_split(src_list):
     :param src_list:
     :return:
     """
-    counter_list = random.sample(range(0, len(src_list)), 550)
-
-    return counter_list
+    return random.sample(range(len(src_list)), 550)
 
 
 if __name__ == '__main__':

@@ -52,9 +52,7 @@ class PraNetv12(nn.Module):
         x3 = self.resnet.layer3(x2)  # bs, 1024, 22, 22
         x_head = self.head(x3)
 
-        x_head_out = F.interpolate(x_head, scale_factor=16, mode='bilinear')
-
-        return x_head_out
+        return F.interpolate(x_head, scale_factor=16, mode='bilinear')
 
     def restore_weights(self, restore_from):
         saved_state_dict = torch.load(restore_from)["model_state_dict"]

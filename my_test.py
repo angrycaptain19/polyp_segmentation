@@ -36,6 +36,8 @@ def main():
 
     folds = config["test"]["folds"]
 
+    visualize_dir = "results"
+
     for id in list(folds.keys()):
 
         test_img_paths = []
@@ -85,8 +87,6 @@ def main():
 
         test_fold = "fold" + str(config["dataset"]["fold"])
         logger.info("Start testing")
-        visualize_dir = "results"
-
         test_fold = 'fold' + str(id)
         for i, pack in tqdm.tqdm(enumerate(test_loader, start=1)):
             image, gt, filename, img = pack

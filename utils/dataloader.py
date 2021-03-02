@@ -86,12 +86,11 @@ def get_loader(image_root,
                pin_memory=True):
 
     dataset = PolypDataset(image_root, gt_root, trainsize)
-    data_loader = data.DataLoader(dataset=dataset,
+    return data.DataLoader(dataset=dataset,
                                   batch_size=batchsize,
                                   shuffle=shuffle,
                                   num_workers=num_workers,
                                   pin_memory=pin_memory)
-    return data_loader
 
 
 class test_dataset:
